@@ -12,4 +12,5 @@ Setup
   - "python manage.py makemigrations"
   - "python manage.py migrate"
 6. run server using "python manage.py runserver"
+NOTE: built on python version 3.8.3
 ```
