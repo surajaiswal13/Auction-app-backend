@@ -24,7 +24,10 @@ class UserLoginAPIView(ObtainAuthToken):
                                             context={'request': request})
             serializer.is_valid(raise_exception=True)
             user = serializer.validated_data['user']
-            token = Token.objects.get_or_none(user=user)
+            try:
+                token = Token.objects.get(user=user)
+            except Token.DoesNotExist:
+                return None
             response = {
                 'token': token.key,
                 'id': user.pk,

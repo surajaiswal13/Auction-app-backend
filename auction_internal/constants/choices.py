@@ -1,6 +1,7 @@
 from djchoices import ChoiceItem, DjangoChoices
 from typing import Final
 
+
 class BiddingChoices(DjangoChoices):
 
     open: Final = ChoiceItem("OPEN", "open")
