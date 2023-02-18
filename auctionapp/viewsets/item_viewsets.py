@@ -10,6 +10,10 @@ from auctionapp.helpers.custom_filters import ItemFilter
 
 
 class ItemViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for CRUD operations on the Item model.
+    """
+
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
@@ -18,11 +22,19 @@ class ItemViewSet(viewsets.ModelViewSet):
     filterset_class = ItemFilter
 
     def get_queryset(self):
+        """
+        Get the queryset of items, with the option to filter by seller.
+        """
+
         if self.request.query_params.get("user"):
             return super().get_queryset().filter(seller=self.request.user).select_related('seller')
         return super().get_queryset()
     
     def perform_create(self, serializer):
+        """
+        Set the current user as the seller of the created item.
+        """
+
         try:
             serializer.validated_data['seller'] = self.request.user
             return super().perform_create(serializer)

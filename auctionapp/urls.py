@@ -12,7 +12,6 @@ router.register('bids', BidViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    # path('auth/login/', obtain_auth_token, name='create-token'),
     path('auth/login/', UserLoginAPIView.as_view(), name='login'),
     path('auth/register/', RegisterUserAPIView.as_view(), name='register'),
 ]

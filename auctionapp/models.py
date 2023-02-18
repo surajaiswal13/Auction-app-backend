@@ -5,6 +5,10 @@ from auction_internal.constants import choices
 # Create your models here.
 
 class User(AbstractUser):
+    """
+    Custom User model with additional fields for seller and bidder flags
+    """
+
     is_seller = models.BooleanField(default=False)
     is_bidder = models.BooleanField(default=False)
 
@@ -12,6 +16,10 @@ class User(AbstractUser):
         return self.username
 
 class Item(models.Model):
+    """
+    Model representing an auction item
+    """
+
     name = models.CharField(max_length=244)
     description = models.TextField()
     starting_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -38,18 +46,25 @@ class Item(models.Model):
         ]
 
 class Bid(models.Model):
+    """
+    Model representing a bid on an auction item
+    """
+
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     bidder = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     is_deleted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    # No Update
 
     def __str__(self):
         return f"{self.bidder.username} bid {self.amount} on {self.item.name}"
 
 
 class Notification(models.Model):
+    """
+    Model representing a notification message to a user
+    """
+
     recipient = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField()
     read = models.BooleanField(default=False)

@@ -11,14 +11,25 @@ from auctionapp.serializers.user_serializers import UserSerializer, RegisterUser
 # Create your views here.
 
 class UserViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for CRUD operations on the User model.
+    """
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
 
 class UserLoginAPIView(ObtainAuthToken):
+    """
+    API view to logging in users.
+    """
 
     def post(self, request, *args, **kwargs):
+        """
+        Customized the post method to return a custom response when after logging in a user
+        """
+
         try:
             serializer = self.serializer_class(data=request.data,
                                             context={'request': request})
@@ -42,10 +53,18 @@ class UserLoginAPIView(ObtainAuthToken):
             raise e
     
 class RegisterUserAPIView(generics.GenericAPIView):
+    """
+    API view to register new users.
+    """
+
     serializer_class = RegisterUserSerializer
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
+        """
+        Customized the post method to return a custom response when after registering a user
+        """
+
         try:
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)

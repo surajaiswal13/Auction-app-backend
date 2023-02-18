@@ -9,16 +9,42 @@ from auction_internal.constants import choices
 
 
 class BidViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for CRUD operations on the Bid model.
+
+    Attributes:
+        queryset (QuerySet): A QuerySet containing all Bid objects.
+        serializer_class (Serializer): A serializer class for Bid objects.
+        permission_classes (list): A list of permission classes for the viewset.
+    """
+
     queryset = Bid.objects.all()
     serializer_class = BidSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        """
+        Returns a filtered queryset for Bids based on query parameters.
+        If 'user' parameter is passed, returns Bids placed by the requesting user,
+        else all bids are returned.
+        """
+
         if self.request.query_params.get('user'):
             return super().get_queryset().filter(bidder=self.request.user).select_related('item')
         return super().get_queryset()
     
     def validate_item_status(self, item):
+        """
+        Validates the status of an item and raises a ValidationError if the item is closed or the bidding is over.
+        If the item is open, updates its status to closed and saves it.
+
+        Args:
+            item (Item): An Item object to validate.
+
+        Raises:
+            ValidationError: If the item is closed or the bidding is over.
+        """
+
         now = timezone.now()
         try:
             if item and (item.bidding_status != choices.BiddingChoices.open) or \
@@ -31,6 +57,16 @@ class BidViewSet(viewsets.ModelViewSet):
             raise ValidationError({'error': 'An error occurred while validating item status.'})
 
     def perform_create(self, serializer):
+        """
+        Overrides the default perform_create method to validate the item status before creating a new Bid object.
+
+        Args:
+            serializer (BidSerializer): A serializer instance containing validated data for the new Bid object.
+
+        Returns:
+            A new Bid object.
+        """
+
         try:
             item = serializer.validated_data.get('item')
             self.validate_item_status(item)
@@ -42,6 +78,16 @@ class BidViewSet(viewsets.ModelViewSet):
 
 
     def perform_update(self, serializer):
+        """
+        Overrides the default perform_update method to validate the item status before updating an existing Bid object.
+
+        Args:
+            serializer (BidSerializer): A serializer instance containing validated data for the updated Bid object.
+
+        Returns:
+            An updated Bid object.
+        """
+        
         try:
             item = serializer.validated_data.get('item')
             self.validate_item_status(item)
